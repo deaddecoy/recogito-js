@@ -40,16 +40,36 @@ export const trimRange = range => {
   return range;
 };
 
-export const rangeToSelection = (range, containerEl) => {
+export const rangeToSelection = (range, containerEl, selection) => {
   const rangeBefore = document.createRange();
 
   // A helper range from the start of the contentNode to the start of the selection
   rangeBefore.setStart(containerEl, 0);
   rangeBefore.setEnd(range.startContainer, range.startOffset);
 
+  
   const quote = range.toString();
   const start = rangeBefore.toString().length;
 
+  // Get nearest data element
+  // Set range based on that element
+  const closeEl = selection.anchorNode.parentNode.closest(".data");
+  var relativeField = null;
+  var relativeStart = null;
+  var relativeEnd = null;
+  
+  if (closeEl !== null) {
+	relativeField = closeEl.id;  
+		
+	var beforeSelect = document.createRange();
+	beforeSelect.setStart(closeEl, 0);
+    beforeSelect.setEnd(range.startContainer, range.startOffset);
+	relativeStart = beforeSelect.toString().length;	
+	relativeEnd = relativeStart + selection.toString().length;
+	// TODO: find solution for annotation that spans multiple data segments
+  }
+  
+  
   return new Selection({ 
     selector: [{
       type: 'TextQuoteSelector',
@@ -58,7 +78,12 @@ export const rangeToSelection = (range, containerEl) => {
       type: 'TextPositionSelector',
       start: start,
       end: start + quote.length
-    }]
+    }, {
+	  field: relativeField,
+	  start: relativeStart,
+	  end: relativeEnd,
+	  length: selection.toString().length
+	}]
   });
 
 };

@@ -77,7 +77,7 @@ export default class SelectionHandler extends EventEmitter {
         const { commonAncestorContainer } = selectedRange;
 
         if (contains(this.el, commonAncestorContainer)) {
-          const stub = rangeToSelection(selectedRange, this.el);
+          const stub = rangeToSelection(selectedRange, this.el, selection);
 
           const spans = this.highlighter.wrapRange(selectedRange);
           spans.forEach(span => span.className = 'r6o-selection');
