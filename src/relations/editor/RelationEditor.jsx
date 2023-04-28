@@ -44,8 +44,14 @@ export default class RelationEditor extends Component {
     }
   }
   
-  onSubmit = () => {
-    const value = this.element.current.querySelector('input').value;
+  onSubmit = (e) => {
+	// BUG in original code, relationships do not fill in 
+	// Autocomplete value.
+	var v = this.element.current.querySelector('input').value;
+	if (typeof e === 'string') {
+		v = e;
+	}
+	const value = v;
     
     const updatedAnnotation = this.props.relation.annotation.clone({
       motivation: 'linking',
