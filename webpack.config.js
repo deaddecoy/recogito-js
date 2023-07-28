@@ -14,7 +14,8 @@ module.exports = {
     filename: 'recogito.min.js',
     library: 'Recogito',
     libraryTarget: 'umd',
-    umdNamedDefine: true
+    umdNamedDefine: true,
+	hashFunction: "xxhash64"
   },
   devtool: 'source-map',
   performance: {
