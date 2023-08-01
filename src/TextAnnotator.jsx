@@ -25,6 +25,7 @@ export default class TextAnnotator extends Component {
       readOnly: this.props.config.readOnly,
 
       widgets: this.props.config.widgets,
+	  relationWidgets: this.props.config.relationWidgets,
 
       // Headless mode
       editorDisabled: this.props.config.disableEditor,
@@ -240,9 +241,10 @@ export default class TextAnnotator extends Component {
 
   /** 'Ok' on the relation editor popup **/
   onCreateOrUpdateRelation = (relation, previous) => {
-    this.relationsLayer.addOrUpdateRelation(relation, previous);
+    // console.log("TextAnnotator create or update relation");
+	this.relationsLayer.addOrUpdateRelation(relation, previous);
     this.closeRelationsEditor();
-
+	
     // This method will always receive a 'previous' connection -
     // if the previous is just an empty connection, fire 'create',
     // otherwise, fire 'update'
@@ -375,8 +377,7 @@ export default class TextAnnotator extends Component {
 
   render() {
   	// The editor should open under normal conditions - annotation was selected, no headless mode
-    const open = (this.state.selectedAnnotation || this.state.selectedRelation) && !this.state.editorDisabled;
-
+    const open = (this.state.selectedAnnotation || this.state.selectedRelation) && !this.state.editorDisabled;	
     const readOnly = this.state.readOnly || this.state.selectedAnnotation?.readOnly;
 
     return (open && (
@@ -406,7 +407,9 @@ export default class TextAnnotator extends Component {
             onRelationUpdated={this.onCreateOrUpdateRelation}
             onRelationDeleted={this.onDeleteRelation}
             onCancel={this.closeRelationsEditor}
+			relationWidgets={this.state.relationWidgets}
             vocabulary={this.props.relationVocabulary}
+			env={this.props.env}
           />
         }
       </>
