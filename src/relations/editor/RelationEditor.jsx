@@ -29,8 +29,6 @@ export default class RelationEditor extends Component {
       dragged: false,
       // selectionBounds: bounds(props.selectedElement)
     }
-	//console.log("Init RelationEditor");
-	//console.log(this.state.currentAnnotation);
   }
 
   componentDidMount() {
@@ -68,9 +66,6 @@ export default class RelationEditor extends Component {
 
   /** Shorthand **/
   updateCurrentAnnotation = (diff, saveImmediately) => {
-	  //console.log("Update current annotation");
-	  //console.log(this.state.currentAnnotation);
-	  //console.log(diff);
     this.setState({
       currentAnnotation: this.state.currentAnnotation.clone(diff)
     }, () => {
@@ -79,8 +74,6 @@ export default class RelationEditor extends Component {
       //else 
       //  this.props.onChanged && this.props.onChanged();
     })
-	//console.log("UPDATE");
-	//console.log(this.state.currentAnnotation);
   }
   setPosition() {
     if (this.element.current) {
@@ -97,7 +90,6 @@ export default class RelationEditor extends Component {
 
 
   onAppendBody = (body, saveImmediately) => {
-		//console.log("Append");
 	  return this.updateCurrentAnnotation({	  
     body: [
       ...this.state.currentAnnotation.bodies,
@@ -107,7 +99,6 @@ export default class RelationEditor extends Component {
   }
   
   onUpdateBody = (previous, updated, saveImmediately) => {
-	  //console.log("Update");
 	  return this.updateCurrentAnnotation({
     body: this.state.currentAnnotation.bodies.map(body =>
       body === previous ? { ...updated, ...this.creationMeta(updated) } : body)
@@ -115,15 +106,11 @@ export default class RelationEditor extends Component {
   }
   
   onRemoveBody = (body, saveImmediately) => {	  
-	  //console.log("Remove Body");
-	  //console.log(body);
-	  //console.log(this.state.currentAnnotation.bodies.filter(b => b !== body));
 	  return this.updateCurrentAnnotation({ body: this.state.currentAnnotation.bodies.filter(b => b !== body)}, saveImmediately);
   }
 
 
    onUpsertBody = (arg1, arg2, saveImmediately) => {
-	   //console.log("upsert");
     if (arg1 == null && arg2 != null) {
       // Append arg 2 as a new body
       this.onAppendBody(arg2, saveImmediately);
@@ -143,7 +130,6 @@ export default class RelationEditor extends Component {
 
   onBatchModify = (diffs, saveImmediately) => {
     // First, find previous bodies for auto upserts
-	//console.log("batch modify");
     const autoUpserts = diffs
       .filter(d => d.action === 'upsert' && d.body)
       .map(d => ({
@@ -192,15 +178,13 @@ export default class RelationEditor extends Component {
         // Append
         ...toAppend
     ]
-	//console.log("Updated bodies");
-	//console.log(updatedBodies);
+
     this.updateCurrentAnnotation({ body: updatedBodies }, saveImmediately);
   }
 
   onSetProperty = (property, value) => {
     // A list of properties the user is NOT allowed to set
     const isForbidden = [ '@context', 'id', 'type', 'body', 'target' ].includes(property);
-	//console.log("set property");
     if (isForbidden)
       throw new Exception(`Cannot set ${property} - not allowed`);
     if (value) {
@@ -216,7 +200,6 @@ export default class RelationEditor extends Component {
     const { currentAnnotation } = this.state;
     const context = Array.isArray(currentAnnotation.context) ?
       currentAnnotation.context :  [ currentAnnotation.context ];
-	//console.log("Add context");
     if (context.indexOf(uri) < 0) {
       context.push(uri);
       this.updateCurrentAnnotation({ '@context': context });
@@ -260,9 +243,6 @@ export default class RelationEditor extends Component {
   
   render() {
 	const { currentAnnotation } = this.state;
-	//console.log("Set widgets var");
-	console.log(this.props.relationWidgets);
-	console.log(this.props.relationWidgets.map(getWidget));
 	
 	const widgets = this.props.relationWidgets ?
 		this.props.relationWidgets.map(getWidget) : DEFAULT_WIDGETS;
@@ -275,8 +255,6 @@ export default class RelationEditor extends Component {
 	  //&& // this is not a selection AND
       //!widgets.some(isReadOnlyWidget);  // every widget is deletable
 	  
-	//console.log("Render current annotation");
-	//console.log(currentAnnotation);
     return(
       <div className="r6o-relation-editor" ref={this.element}>
 		<div className="r6o-editor-inner">
