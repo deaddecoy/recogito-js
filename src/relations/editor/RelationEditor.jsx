@@ -77,11 +77,26 @@ export default class RelationEditor extends Component {
   }
   setPosition() {
     if (this.element.current) {
-      const el = this.element.current;
-      const { midX, midY } = this.props.relation;
+      const el = this.element.current;	  
+      const { midX, midY, endX, endY } = this.props.relation;
+	  
+	  // Default show the RelationEditor at the midpoint of
+	  // the relation. This is for relations that are already
+	  // created and need to be modified based on their label,
+	  // which is at the midpoint. 
+	  var x = midX;
+	  var y = midY;
 
-      el.style.top = `${midY}px`;
-      el.style.left = `${midX}px`;
+	  if (endX !== undefined && endY !== undefined){ 
+	    // Show the RelationEditor at the target node
+		// if creating a relationship. This is useful
+		// for relations that require scrolling.
+		x = endX;
+		y = endY;
+	  }
+	  
+      el.style.top = `${y}px`;
+      el.style.left = `${x}px`;
     }
   }
   

@@ -139,7 +139,8 @@ export default class DrawingTool extends EventEmitter {
     const from = this.currentConnection.startAnnotation;
     const to = this.currentConnection.endAnnotation;
     const [ midX, midY ] = this.currentConnection.midXY;
-
+	const [ endX, endY ] = this.currentConnection.endXY;
+console.log(this.currentConnection);
     const annotation = WebAnnotation.create({
       target: [
         { id: from.id },
@@ -147,7 +148,7 @@ export default class DrawingTool extends EventEmitter {
       ]
     });
 
-    this.emit('createRelation', { annotation, from, to, midX, midY });
+    this.emit('createRelation', { annotation, from, to, midX, midY, endX, endY });
   }
 
   reset = () => {
