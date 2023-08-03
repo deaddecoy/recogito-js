@@ -39,16 +39,17 @@ export default class Highlighter {
   })
 
   _addAnnotation = annotation => {
-    try {
-      const [ domStart, domEnd ] = this.charOffsetsToDOMPosition([ annotation.start, annotation.end ]);
+    try {      
+	  const [ domStart, domEnd ] = this.charOffsetsToDOMPosition([ annotation.start, annotation.end ]);
 
       const range = document.createRange();
-      range.setStart(domStart.node, domStart.offset);
-      range.setEnd(domEnd.node, domEnd.offset);
-
-      const spans = this.wrapRange(range);
-      this.applyStyles(annotation, spans);
-      this.bindAnnotation(annotation, spans);
+	  range.setStart(domStart.node, domStart.offset);
+	  range.setEnd(domEnd.node, domEnd.offset);
+	  
+	  const spans = this.wrapRange(range, undefined);
+	  this.applyStyles(annotation, spans);
+	  this.bindAnnotation(annotation, spans);
+	  
     } catch (error) {
       console.warn('Could not render annotation')
       console.warn(error);
@@ -162,7 +163,7 @@ export default class Highlighter {
     return nodes
   }
 
-  charOffsetsToDOMPosition = charOffsets => {
+  charOffsetsToDOMPosition = (charOffsets) => {
     const maxOffset = Math.max.apply(null, charOffsets);
 
     const textNodeProps = (() => {
@@ -170,7 +171,6 @@ export default class Highlighter {
       return this.walkTextNodes(this.el, maxOffset).map(function(node) {
         var nodeLength = node.textContent.length,
             nodeProps = { node: node, start: start, end: start + nodeLength };
-
         start += nodeLength;
         return nodeProps;
       });
@@ -204,48 +204,56 @@ export default class Highlighter {
   }
 
   calculateDomPositionWithin = (textNodeProperties, charOffsets) => {
-    var positions = [];
+    var startPosition = false;
+	var endPosition = false;
 
     textNodeProperties.forEach(function(props, i) {
-      charOffsets.forEach(function(charOffset, j)  {
-        if (charOffset >= props.start && charOffset <= props.end) {
-          // Don't attach nodes for the same charOffset twice
-          var previousOffset = (positions.length > 0) ?
-                positions[positions.length - 1].charOffset : false;
-
-          if (previousOffset !== charOffset)
-            positions.push({
-              charOffset: charOffset,
-              node: props.node,
-              offset: charOffset - props.start
-            });
-        }
-      });
-
-      // Break (i.e. return false) if all positions are computed
-      return positions.length < charOffsets.length;
+	  // Match sections in textNodeProperties to the charOffsets [start, end]
+	  // There are separate if statements for the start and end positions because the
+	  // boundary conditions are different. This prevents preceding sections from being 
+	  // included if the end boundary touches the start of charOffsets[0]. This has 
+	  // the added benefit of having relations snap to the correct section.
+	  var charoffset = false;
+	  var offset = false;
+	  if (charOffsets[0] >= props.start && charOffsets[0] <  props.end) {
+		  startPosition = {
+			  charOffset: charOffsets[0],
+			  node: props.node,  
+			  offset: charOffsets[0] - props.start
+		  }
+	  } 
+	  if (charOffsets[1] > props.start && charOffsets[1] <= props.end) {
+		  endPosition = {
+			  charOffset: charOffsets[1],
+			  node: props.node,  
+			  offset: charOffsets[1] - props.start
+		  }
+	  }	
+      // Break (i.e. return false) if start and end positions are not computed
+	  return ((startPosition != false) & (endPosition != false));
     });
 
-    return positions;
+    return [startPosition, endPosition];
   }
 
   wrapRange = (range, commonRoot) => {
     const root = commonRoot ? commonRoot : this.el;
-
+	
     const surround = range => {
       var wrapper = document.createElement('SPAN');
       range.surroundContents(wrapper);
       return wrapper;
     };
-
+	
     if (range.startContainer === range.endContainer) {
       return [ surround(range) ];
     } else {
+
       // The tricky part - we need to break the range apart and create
       // sub-ranges for each segment
       var nodesBetween =
         this.textNodesBetween(range.startContainer, range.endContainer, root);
-
+		
       // Start with start and end nodes
       var startRange = document.createRange();
       startRange.selectNodeContents(range.startContainer);
