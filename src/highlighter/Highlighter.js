@@ -29,7 +29,7 @@ export default class Highlighter {
         if (remainder.length > 0) {
           render(remainder);
         } else {
-          console.log(`Rendered ${highlights.length}, took ${performance.now() - startTime}ms`);
+          // console.log(`Rendered ${highlights.length}, took ${performance.now() - startTime}ms`);
           resolve();
         }
       });
