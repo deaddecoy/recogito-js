@@ -15,7 +15,7 @@ const deflateNodeList = parents => {
   // Deflates the immediate children of one parent (but not children of children)
   const deflateOne = parent => {
     return Array.from(parent.childNodes).reduce((compacted, node) => {
-      if (node.nodeType === Node.TEXT_NODE) {
+      if (node.nodeType === Node.TEXT_NODE && node.parentElement.tagName != "PRE") {
         if (node.textContent.trim().length > 0) {
           // Text node - trim
           const trimmed = node.textContent.replace(/\s\s+/g, ' ');
