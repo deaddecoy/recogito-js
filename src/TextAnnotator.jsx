@@ -241,7 +241,6 @@ export default class TextAnnotator extends Component {
 
   /** 'Ok' on the relation editor popup **/
   onCreateOrUpdateRelation = (relation, previous) => {
-    // console.log("TextAnnotator create or update relation");
 	this.relationsLayer.addOrUpdateRelation(relation, previous);
     this.closeRelationsEditor();
 	
