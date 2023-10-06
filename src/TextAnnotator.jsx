@@ -46,7 +46,7 @@ export default class TextAnnotator extends Component {
 
   handleEscape = (evt) => {
     if (evt.which === 27)
-      this.onCancelAnnotation();
+      this.onCancelAnnotation(this.state.selectedAnnotation);
   }
 
   componentDidMount() {
